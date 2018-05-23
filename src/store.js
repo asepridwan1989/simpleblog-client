@@ -1,0 +1,132 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+import axios from 'axios'
+import swal from 'sweetalert'
+
+Vue.use(Vuex)
+
+export default new Vuex.Store({
+  state: {
+    articles: '',
+    user: '',
+    error: '',
+    errorLog: '',
+    artProf:''
+  },
+  mutations: {
+    setError (state, payload) {
+      console.log('commit', payload)
+      state.error = payload
+    },
+    setErrorLog (state, payload) {
+      console.log('commit', payload)
+      state.errorLog = payload
+    },
+    setArticles (state, payload) {
+      state.artProf = payload
+    },
+    setArticlesHome (state, payload) {
+      state.articles = payload
+    }
+  },
+  actions: {
+    signup: function (context, payload) {
+      console.log(payload)
+      axios.post('https://simpleblogasepridwan.herokuapp.com/users/signup', payload)
+        .then(response => {
+          console.log('success', response)
+          swal('successfuly registered')
+        })
+        .catch(function (err) {
+          console.log(err.response.data.message)
+          let errorMsg = err.response.data.message
+          context.commit('setError', errorMsg)
+        })
+    },
+    signin: function (context, payload) {
+      console.log(payload)
+      axios.post('https://simpleblogasepridwan.herokuapp.com/users/signin', payload)
+        .then(response => {
+          console.log('success', response.data.dataUser.username)
+          let token = response.data.token
+          let userblog = response.data.dataUser.username
+          localStorage.setItem('blog-username', userblog)
+          localStorage.setItem('blog-token', token)
+          swal('successfuly logged in')
+          window.location.reload(true)
+        })
+        .catch(function (err) {
+          console.log(err.response.data.message)
+          let errorMsg = err.response.data.message
+          context.commit('setErrorLog', errorMsg)
+        })
+    },
+    upload: function (context, payload) {
+      let headers = payload.headers
+      axios.post('https://simpleblogasepridwan.herokuapp.com/articles', payload.body, {headers})
+      .then(response => {
+        swal('successfuly created new article')
+        this.$store.dispatch('getSingpos', headers)
+        console.log('success', response.data)
+      })
+      .catch(function (err) {
+        console.log(err)
+      })
+    },
+    getSingpos: function (context, payload) {
+      console.log(payload)
+      axios.get('https://simpleblogasepridwan.herokuapp.com/articles/profile', {headers: payload})
+      .then(response => {
+        console.log('success', response.data)
+        context.commit('setArticles', response.data.data)
+      })
+      .catch(function (err) {
+        console.log(err)
+      })
+    },
+    deleteArticle: function (context, payload) {
+      console.log(payload)
+      axios.delete(`https://simpleblogasepridwan.herokuapp.com/articles/${payload.id}`, {headers: payload.headers})
+        .then( response => {
+          swal('successfuly deleted article')
+          this.$store.dispatch('getSingpos', payload.headers)
+        })
+        .catch( err => {
+            // this.error = err.response.data.message
+        })
+    },
+    getAllPost: function (context, payload) {
+      axios.get('https://simpleblogasepridwan.herokuapp.com/articles/home', {headers: payload})
+      .then(response => {
+        console.log('success', response.data)
+        context.commit('setArticlesHome', response.data.data)
+      })
+      .catch(function (err) {
+        console.log(err)
+      })
+    },
+    updateArticle: function (context, payload) {
+      console.log(payload)
+      axios.put(`https://simpleblogasepridwan.herokuapp.com/articles/${payload.id}`, payload.body, {headers: payload.headers})
+      .then(response => {
+        console.log('success', response.data)
+        swal('successfuly updated article')
+        context.commit('setArticlesHome', response.data.data)
+        this.$store.dispatch('getSingpos', headers)
+      })
+      .catch(function (err) {
+        console.log(err)
+      })
+    },
+    search: function (context, payload) {
+      axios.get(`https://simpleblogasepridwan.herokuapp.com/articles/search?title=${payload}`)
+      .then(response => {
+        console.log('success', response.data)
+        context.commit('setArticlesHome', response.data.data)
+      })
+      .catch(function (err) {
+        console.log(err)
+      })
+    }
+  }  
+})
