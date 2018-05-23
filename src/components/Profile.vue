@@ -67,7 +67,8 @@ export default {
         body,
         headers
       }
-      this.$store.dispatch('upload', payload)
+      this.$store.dispatch('upload', payload)      
+       this.$store.dispatch('getSingpos', headers)
     }
   }
 }

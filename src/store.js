@@ -11,7 +11,8 @@ export default new Vuex.Store({
     user: '',
     error: '',
     errorLog: '',
-    artProf:''
+    artProf:'',
+    singArt: ''
   },
   mutations: {
     setError (state, payload) {
@@ -27,12 +28,15 @@ export default new Vuex.Store({
     },
     setArticlesHome (state, payload) {
       state.articles = payload
+    },
+    setOneArticle (state, payload) {
+      state.singArt = payload
     }
   },
   actions: {
     signup: function (context, payload) {
       console.log(payload)
-      axios.post('https://simpleblogasepridwan.herokuapp.com/users/signup', payload)
+      axios.post('http://localhost:3000/users/signup', payload)
         .then(response => {
           console.log('success', response)
           swal('successfuly registered')
@@ -45,7 +49,7 @@ export default new Vuex.Store({
     },
     signin: function (context, payload) {
       console.log(payload)
-      axios.post('https://simpleblogasepridwan.herokuapp.com/users/signin', payload)
+      axios.post('http://localhost:3000/users/signin', payload)
         .then(response => {
           console.log('success', response.data.dataUser.username)
           let token = response.data.token
@@ -63,11 +67,11 @@ export default new Vuex.Store({
     },
     upload: function (context, payload) {
       let headers = payload.headers
-      axios.post('https://simpleblogasepridwan.herokuapp.com/articles', payload.body, {headers})
+      axios.post('http://localhost:3000/articles', payload.body, {headers})
       .then(response => {
+        console.log('success', response.data)
         swal('successfuly created new article')
         this.$store.dispatch('getSingpos', headers)
-        console.log('success', response.data)
       })
       .catch(function (err) {
         console.log(err)
@@ -75,7 +79,7 @@ export default new Vuex.Store({
     },
     getSingpos: function (context, payload) {
       console.log(payload)
-      axios.get('https://simpleblogasepridwan.herokuapp.com/articles/profile', {headers: payload})
+      axios.get('http://localhost:3000/articles/profile', {headers: payload})
       .then(response => {
         console.log('success', response.data)
         context.commit('setArticles', response.data.data)
@@ -86,17 +90,18 @@ export default new Vuex.Store({
     },
     deleteArticle: function (context, payload) {
       console.log(payload)
-      axios.delete(`https://simpleblogasepridwan.herokuapp.com/articles/${payload.id}`, {headers: payload.headers})
+      axios.delete(`http://localhost:3000/articles/${payload.id}`, {headers: payload.headers})
         .then( response => {
-          swal('successfuly deleted article')
-          this.$store.dispatch('getSingpos', payload.headers)
+            swal('successfuly deleted article')    
+            window.location.reload(true);      
         })
         .catch( err => {
             // this.error = err.response.data.message
         })
     },
     getAllPost: function (context, payload) {
-      axios.get('https://simpleblogasepridwan.herokuapp.com/articles/home', {headers: payload})
+      console.log('ke home action')
+      axios.get('http://localhost:3000/articles/home')
       .then(response => {
         console.log('success', response.data)
         context.commit('setArticlesHome', response.data.data)
@@ -107,22 +112,31 @@ export default new Vuex.Store({
     },
     updateArticle: function (context, payload) {
       console.log(payload)
-      axios.put(`https://simpleblogasepridwan.herokuapp.com/articles/${payload.id}`, payload.body, {headers: payload.headers})
+      axios.put(`http://localhost:3000/articles/${payload.id}`, payload.body, {headers: payload.headers})
       .then(response => {
         console.log('success', response.data)
-        swal('successfuly updated article')
-        context.commit('setArticlesHome', response.data.data)
-        this.$store.dispatch('getSingpos', headers)
+        swal('successfuly updated article') 
+        // context.commit('setArticlesHome', response.data.data)
       })
       .catch(function (err) {
         console.log(err)
       })
     },
     search: function (context, payload) {
-      axios.get(`https://simpleblogasepridwan.herokuapp.com/articles/search?title=${payload}`)
+      axios.get(`http://localhost:3000/articles/search?title=${payload}`)
       .then(response => {
         console.log('success', response.data)
         context.commit('setArticlesHome', response.data.data)
+      })
+      .catch(function (err) {
+        console.log(err)
+      })
+    },
+    getOneArticle (context, payload) {
+      axios.get(`http://localhost:3000/articles/detail/${payload}`)
+      .then(response => {
+        console.log('success', response.data)
+        context.commit('setOneArticle', response.data.data)
       })
       .catch(function (err) {
         console.log(err)

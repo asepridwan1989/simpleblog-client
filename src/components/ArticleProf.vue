@@ -40,7 +40,6 @@
       <div class="p-2">
         <button @click="deleteArt" :data-id="article._id" class="btn btn-outline-secondary" >delete</button>
       </div>
-      <div class="p-2">Flex item 3</div>
     </div>   
   </div>
   </div>  
@@ -73,6 +72,7 @@ export default {
         headers
       }
       this.$store.dispatch('deleteArticle', payload)
+      // this.$store.dispatch('getSingpos', headers)
     },
     updateArticle() {
       let id = event.srcElement.dataset.id
@@ -90,6 +90,8 @@ export default {
       }
       console.log('payload', payload)
       this.$store.dispatch('updateArticle', payload)
+      this.$store.dispatch('getSingpos', payload.headers)
+      this.$store.dispatch('getAllPost')
     }
   }
 }
