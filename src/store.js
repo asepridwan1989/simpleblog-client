@@ -36,7 +36,7 @@ export default new Vuex.Store({
   actions: {
     signup: function (context, payload) {
       console.log(payload)
-      axios.post('http://localhost:3000/users/signup', payload)
+      axios.post('https://simpleblogasepridwan.herokuapp.com/users/signup', payload)
         .then(response => {
           console.log('success', response)
           swal('successfuly registered')
@@ -49,7 +49,7 @@ export default new Vuex.Store({
     },
     signin: function (context, payload) {
       console.log(payload)
-      axios.post('http://localhost:3000/users/signin', payload)
+      axios.post('https://simpleblogasepridwan.herokuapp.com/users/signin', payload)
         .then(response => {
           console.log('success', response.data.dataUser.username)
           let token = response.data.token
@@ -67,7 +67,7 @@ export default new Vuex.Store({
     },
     upload: function (context, payload) {
       let headers = payload.headers
-      axios.post('http://localhost:3000/articles', payload.body, {headers})
+      axios.post('https://simpleblogasepridwan.herokuapp.com/articles', payload.body, {headers})
       .then(response => {
         console.log('success', response.data)
         swal('successfuly created new article')
@@ -79,7 +79,7 @@ export default new Vuex.Store({
     },
     getSingpos: function (context, payload) {
       console.log(payload)
-      axios.get('http://localhost:3000/articles/profile', {headers: payload})
+      axios.get('https://simpleblogasepridwan.herokuapp.com/articles/profile', {headers: payload})
       .then(response => {
         console.log('success', response.data)
         context.commit('setArticles', response.data.data)
@@ -90,7 +90,7 @@ export default new Vuex.Store({
     },
     deleteArticle: function (context, payload) {
       console.log(payload)
-      axios.delete(`http://localhost:3000/articles/${payload.id}`, {headers: payload.headers})
+      axios.delete(`https://simpleblogasepridwan.herokuapp.com/articles/${payload.id}`, {headers: payload.headers})
         .then( response => {
             swal('successfuly deleted article')    
             window.location.reload(true);      
@@ -101,7 +101,7 @@ export default new Vuex.Store({
     },
     getAllPost: function (context, payload) {
       console.log('ke home action')
-      axios.get('http://localhost:3000/articles/home')
+      axios.get('https://simpleblogasepridwan.herokuapp.com/articles/home')
       .then(response => {
         console.log('success', response.data)
         context.commit('setArticlesHome', response.data.data)
@@ -112,7 +112,7 @@ export default new Vuex.Store({
     },
     updateArticle: function (context, payload) {
       console.log(payload)
-      axios.put(`http://localhost:3000/articles/${payload.id}`, payload.body, {headers: payload.headers})
+      axios.put(`https://simpleblogasepridwan.herokuapp.com/articles/${payload.id}`, payload.body, {headers: payload.headers})
       .then(response => {
         console.log('success', response.data)
         swal('successfuly updated article') 
@@ -123,7 +123,7 @@ export default new Vuex.Store({
       })
     },
     search: function (context, payload) {
-      axios.get(`http://localhost:3000/articles/search?title=${payload}`)
+      axios.get(`https://simpleblogasepridwan.herokuapp.com/articles/search?title=${payload}`)
       .then(response => {
         console.log('success', response.data)
         context.commit('setArticlesHome', response.data.data)
@@ -133,7 +133,7 @@ export default new Vuex.Store({
       })
     },
     getOneArticle (context, payload) {
-      axios.get(`http://localhost:3000/articles/detail/${payload}`)
+      axios.get(`https://simpleblogasepridwan.herokuapp.com/articles/detail/${payload}`)
       .then(response => {
         console.log('success', response.data)
         context.commit('setOneArticle', response.data.data)
